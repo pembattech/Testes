@@ -1,125 +1,156 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Expense Tracker</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    :root {
-      --primary: #2a9d8f;
-      --accent: #e9c46a;
-      --danger: #e76f51;
-      --bg: #f4f4f4;
-      --text: #264653;
-      --white: #ffffff;
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Expense Tracker with Trends</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root {
+    --primary: #2a9d8f;
+    --accent: #e9c46a;
+    --danger: #e76f51;
+    --bg: #f4f4f4;
+    --text: #264653;
+    --white: #fff;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: var(--bg);
+    color: var(--text);
+  }
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    background-color: var(--white);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  h2, h3 {
+    color: var(--primary);
+    margin-top: 0;
+  }
+  .form-group,
+  .form-section {
+    margin-bottom: 20px;
+  }
+  select, input[type="number"], input[type="date"], button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+  }
+  select[multiple] {
+    height: auto;
+  }
+  button {
+    background-color: var(--primary);
+    color: var(--white);
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    font-weight: 600;
+  }
+  button:hover {
+    background-color: #21867a;
+  }
+  .danger {
+    background-color: var(--danger);
+  }
+  .danger:hover {
+    background-color: #c8563c;
+  }
+  .category-block {
+    background-color: #eef6f6;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+  }
+  #confirmationSection {
+    background-color: #fff8e1;
+    border: 1px solid #f0d26b;
+    padding: 15px;
+    border-radius: 10px;
+  }
+  .expense-item {
+    padding: 8px;
+    border-bottom: 1px solid #ccc;
+  }
+  #chartContainer {
+    margin-top: 30px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+  }
+  @media (max-width: 600px) {
+    select, input[type="number"], input[type="date"], button {
+      font-size: 15px;
     }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 20px;
-      background-color: var(--bg);
-      color: var(--text);
-    }
-
-    h2, h3 {
-      color: var(--primary);
-      margin-top: 0;
-    }
-
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      background-color: var(--white);
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-
-    .form-group,
-    .form-section {
-      margin-bottom: 20px;
-    }
-
-    select, input[type="number"], button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      margin-bottom: 10px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-    }
-
-    select[multiple] {
-      height: auto;
-    }
-
-    button {
-      background-color: var(--primary);
-      color: var(--white);
-      border: none;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    button:hover {
-      background-color: #21867a;
-    }
-
-    .danger {
-      background-color: var(--danger);
-    }
-
-    .danger:hover {
-      background-color: #c8563c;
-    }
-
-    .category-block {
-      background-color: #eef6f6;
-      padding: 15px;
-      border-radius: 10px;
-      margin-bottom: 15px;
-    }
-
-    #confirmationSection {
-      background-color: #fff8e1;
-      border: 1px solid #f0d26b;
-      padding: 15px;
-      border-radius: 10px;
-    }
-
-    .expense-item {
-      padding: 8px;
-      border-bottom: 1px solid #ccc;
-    }
-
-    #chartContainer {
-      margin-top: 30px;
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-    }
-
-    @media (max-width: 600px) {
-      select, input[type="number"], button {
-        font-size: 15px;
-      }
-    }
-  </style>
+  }
+  label {
+    font-weight: 600;
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <h2>Expense Tracker (Multi-Category)</h2>
+<div class="container">
+  <h2>Expense Tracker with Trends</h2>
 
+  <div class="form-group">
+    <label for="categories">Select Categories (hold Ctrl/Cmd to select multiple):</label>
+    <select id="categories" multiple size="7" onchange="renderCategoryInputs()">
+      <option value="housing">Housing</option>
+      <option value="transportation">Transportation</option>
+      <option value="groceries">Groceries</option>
+      <option value="debt">Debt</option>
+      <option value="eating out">Eating Out</option>
+      <option value="entertainment">Entertainment</option>
+      <option value="personal care">Personal Care</option>
+      <option value="education">Education</option>
+      <option value="gifts and donation">Gifts and Donation</option>
+    </select>
+  </div>
+
+  <form id="expenseForm" onsubmit="event.preventDefault(); confirmExpenses();">
+    <div id="categoryInputs" class="form-section"></div>
+    <button type="submit">Review Expenses</button>
+  </form>
+
+  <div id="confirmationSection" class="form-section" style="display:none;">
+    <h3>Confirm These Expenses:</h3>
+    <ul id="confirmationList"></ul>
+    <button onclick="saveExpenses()">Confirm & Save</button>
+    <button onclick="cancelConfirmation()" class="danger">Cancel</button>
+  </div>
+
+  <div id="expenses" class="form-section">
+    <h3>Saved Expense History:</h3>
+    <div id="summary"></div>
+    <button onclick="clearAllExpenses()" class="danger">🧹 Clear All Expenses</button>
+  </div>
+
+  <div id="chartContainer">
+    <h3>📊 Expense Trends</h3>
     <div class="form-group">
-      <label for="categories">Select Categories:</label>
-      <select id="categories" multiple size="6" onchange="renderCategoryInputs()">
+      <label for="viewType">View By:</label>
+      <select id="viewType" onchange="updateChart()">
+        <option value="month">Month</option>
+        <option value="week">Week</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="categoryFilter">Category Filter:</label>
+      <select id="categoryFilter" onchange="updateChart()">
+        <option value="all">All Categories</option>
         <option value="housing">Housing</option>
         <option value="transportation">Transportation</option>
         <option value="groceries">Groceries</option>
@@ -131,202 +162,275 @@
         <option value="gifts and donation">Gifts and Donation</option>
       </select>
     </div>
-
-    <form id="expenseForm">
-      <div id="categoryInputs" class="form-section"></div>
-      <button type="button" onclick="confirmExpenses()">Review Expenses</button>
-    </form>
-
-    <div id="confirmationSection" class="form-section" style="display:none;">
-      <h3>Confirm These Expenses:</h3>
-      <ul id="confirmationList"></ul>
-      <button onclick="saveExpenses()">Confirm & Save</button>
-      <button onclick="cancelConfirmation()" class="danger">Cancel</button>
-    </div>
-
-    <div id="expenses" class="form-section">
-      <h3>Saved Expense History:</h3>
-      <div id="summary"></div>
-      <button onclick="clearAllExpenses()" class="danger">🧹 Clear All Expenses</button>
-    </div>
-
-    <div id="chartContainer">
-      <h3>📊 Expense Distribution</h3>
-      <canvas id="expenseChart" width="400" height="300"></canvas>
-    </div>
+    <canvas id="expenseChart" width="800" height="400"></canvas>
   </div>
+</div>
 
-  <script>
-    const defaultOptions = {
-      "transportation": [70, 80, 90, 100],
-      "eating out": [150, 200, 250]
-    };
+<script>
+  const defaultOptions = {
+    "transportation": [70, 80, 90, 100],
+    "eating out": [150, 200, 250]
+  };
 
-    let expenses = JSON.parse(localStorage.getItem("expenses")) || [];
-    let pendingExpenses = [];
-    let chart;
+  let expenses = JSON.parse(localStorage.getItem("expenses")) || [];
+  let pendingExpenses = [];
+  let chart;
 
-    function renderCategoryInputs() {
-      const selected = Array.from(document.getElementById("categories").selectedOptions).map(opt => opt.value);
-      const container = document.getElementById("categoryInputs");
-      container.innerHTML = "";
+  function capitalize(text) {
+    return text.charAt(0).toUpperCase() + text.slice(1);
+  }
 
-      selected.forEach(category => {
-        const block = document.createElement("div");
-        block.className = "category-block";
+  // Render inputs for selected categories
+  function renderCategoryInputs() {
+    const selected = Array.from(document.getElementById("categories").selectedOptions).map(opt => opt.value);
+    const container = document.getElementById("categoryInputs");
+    container.innerHTML = "";
 
-        block.innerHTML = `
-          <strong>${capitalize(category)}</strong><br>
-          ${defaultOptions[category] ? renderDefaultSelect(category) : ""}
-          <label>Custom Amount (optional):</label>
-          <input type="number" name="custom-${category}" placeholder="e.g. 100" />
+    selected.forEach(category => {
+      const block = document.createElement("div");
+      block.className = "category-block";
+
+      let defaultSelectHTML = "";
+      if (defaultOptions[category]) {
+        defaultSelectHTML = `
+          <label for="default-${category}">Select Default Amount:</label>
+          <select name="default-${category}" id="default-${category}">
+            <option value="" selected disabled>Select default amount</option>
+            ${defaultOptions[category].map(val => `<option value="${val}">$${val}</option>`).join("")}
+          </select>
         `;
+      }
 
-        container.appendChild(block);
-      });
-    }
-
-    function renderDefaultSelect(category) {
-      let options = defaultOptions[category]
-        .map(val => `<option value="${val}">$${val}</option>`)
-        .join("");
-      return `
-        <label>Select Default Amount:</label>
-        <select name="default-${category}">${options}</select>
+      block.innerHTML = `
+        <strong>${capitalize(category)}</strong>
+        ${defaultSelectHTML}
+        <label for="custom-${category}">Custom Amount (optional):</label>
+        <input type="number" name="custom-${category}" id="custom-${category}" min="0" step="0.01" placeholder="e.g. 100" />
+        <label for="date-${category}">Date:</label>
+        <input type="date" name="date-${category}" id="date-${category}" value="${new Date().toISOString().slice(0,10)}" max="${new Date().toISOString().slice(0,10)}" />
       `;
-    }
 
-    function confirmExpenses() {
-      pendingExpenses = [];
-      const selected = Array.from(document.getElementById("categories").selectedOptions).map(opt => opt.value);
-      const form = document.getElementById("expenseForm");
+      container.appendChild(block);
+    });
+  }
 
-      selected.forEach(category => {
-        const defaultInput = form.querySelector(`[name="default-${category}"]`);
-        const customInput = form.querySelector(`[name="custom-${category}"]`);
-        const defaultAmount = defaultInput ? parseFloat(defaultInput.value) : NaN;
-        const customAmount = parseFloat(customInput.value);
+  // Confirm pending expenses before saving
+  function confirmExpenses() {
+    pendingExpenses = [];
+    const selected = Array.from(document.getElementById("categories").selectedOptions).map(opt => opt.value);
+    const form = document.getElementById("expenseForm");
 
-        let amount = NaN;
-        if (!isNaN(customAmount) && customAmount > 0) {
-          amount = customAmount;
-        } else if (!isNaN(defaultAmount)) {
-          amount = defaultAmount;
-        }
+    for (const category of selected) {
+      const defaultInput = form.querySelector(`[name="default-${category}"]`);
+      const customInput = form.querySelector(`[name="custom-${category}"]`);
+      const dateInput = form.querySelector(`[name="date-${category}"]`);
 
-        if (!isNaN(amount) && amount > 0) {
-          pendingExpenses.push({
-            category,
-            amount,
-            timestamp: new Date().toLocaleString()
-          });
-        }
-      });
+      const defaultAmount = defaultInput ? parseFloat(defaultInput.value) : NaN;
+      const customAmount = parseFloat(customInput.value);
+      const dateValue = dateInput.value;
 
-      if (pendingExpenses.length === 0) {
-        alert("Please enter at least one valid amount.");
+      let amount = NaN;
+      if (!isNaN(customAmount) && customAmount > 0) {
+        amount = customAmount;
+      } else if (!isNaN(defaultAmount)) {
+        amount = defaultAmount;
+      }
+
+      if (!dateValue) {
+        alert(`Please select a valid date for ${capitalize(category)}.`);
         return;
       }
 
-      const confirmList = document.getElementById("confirmationList");
-      confirmList.innerHTML = "";
-      pendingExpenses.forEach(item => {
-        const li = document.createElement("li");
-        li.textContent = `${capitalize(item.category)} - $${item.amount.toFixed(2)} at ${item.timestamp}`;
-        confirmList.appendChild(li);
-      });
-
-      document.getElementById("confirmationSection").style.display = "block";
+      if (!isNaN(amount) && amount > 0) {
+        pendingExpenses.push({
+          category,
+          amount,
+          date: dateValue,
+          timestamp: new Date().toLocaleString()
+        });
+      }
     }
 
-    function saveExpenses() {
-      expenses = expenses.concat(pendingExpenses);
-      localStorage.setItem("expenses", JSON.stringify(expenses));
-      pendingExpenses = [];
-      document.getElementById("confirmationSection").style.display = "none";
-      document.getElementById("expenseForm").reset();
-      document.getElementById("categoryInputs").innerHTML = "";
+    if (pendingExpenses.length === 0) {
+      alert("Please enter at least one valid amount.");
+      return;
+    }
+
+    const confirmList = document.getElementById("confirmationList");
+    confirmList.innerHTML = "";
+    pendingExpenses.forEach(item => {
+      const li = document.createElement("li");
+      li.textContent = `${capitalize(item.category)} - $${item.amount.toFixed(2)} on ${item.date} (added at ${item.timestamp})`;
+      confirmList.appendChild(li);
+    });
+
+    document.getElementById("confirmationSection").style.display = "block";
+    window.scrollTo({top: document.body.scrollHeight, behavior: "smooth"});
+  }
+
+  function cancelConfirmation() {
+    pendingExpenses = [];
+    document.getElementById("confirmationSection").style.display = "none";
+  }
+
+  // Save confirmed expenses and update UI
+  function saveExpenses() {
+    expenses = expenses.concat(pendingExpenses);
+    localStorage.setItem("expenses", JSON.stringify(expenses));
+    pendingExpenses = [];
+    document.getElementById("confirmationSection").style.display = "none";
+    document.getElementById("expenseForm").reset();
+    renderCategoryInputs();
+    updateSummary();
+    updateChart();
+    alert("Expenses saved successfully!");
+  }
+
+  // Clear all expenses from memory and UI
+  function clearAllExpenses() {
+    if (confirm("Are you sure you want to clear ALL expenses? This action cannot be undone.")) {
+      expenses = [];
+      localStorage.removeItem("expenses");
       updateSummary();
-    }
-
-    function cancelConfirmation() {
-      pendingExpenses = [];
-      document.getElementById("confirmationSection").style.display = "none";
-    }
-
-    function clearAllExpenses() {
-      if (confirm("Are you sure you want to delete all expenses?")) {
-        expenses = [];
-        localStorage.removeItem("expenses");
-        updateSummary();
-      }
-    }
-
-    function updateSummary() {
-      const summaryDiv = document.getElementById("summary");
-      summaryDiv.innerHTML = "";
-
-      if (expenses.length === 0) {
-        summaryDiv.innerHTML = "<p>No expenses recorded yet.</p>";
-        updateChart();
-        return;
-      }
-
-      expenses.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "expense-item";
-        div.innerHTML = `<strong>${capitalize(item.category)}</strong> - $${item.amount.toFixed(2)}<br><small>${item.timestamp}</small>`;
-        summaryDiv.appendChild(div);
-      });
-
       updateChart();
     }
+  }
 
-    function updateChart() {
-      const totals = {};
+  // Group expenses by month
+  function groupExpensesByMonth(expenses) {
+    const grouped = {};
 
-      expenses.forEach(({ category, amount }) => {
-        totals[category] = (totals[category] || 0) + amount;
+    expenses.forEach(({category, amount, date}) => {
+      const month = date.slice(0, 7); // "YYYY-MM"
+      if (!grouped[month]) grouped[month] = {};
+      if (!grouped[month][category]) grouped[month][category] = 0;
+      grouped[month][category] += amount;
+    });
+
+    return grouped;
+  }
+
+  // Helper to get ISO week string e.g. 2025-W31
+  function getWeekNumber(dateStr) {
+    const date = new Date(dateStr);
+    // Thursday in current week decides the year.
+    date.setHours(0, 0, 0, 0);
+    date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+    const week1 = new Date(date.getFullYear(), 0, 4);
+    return `${date.getFullYear()}-W${1 + Math.round(((date - week1) / 86400000 - 3) / 7)}`;
+  }
+
+  // Group expenses by week
+  function groupExpensesByWeek(expenses) {
+    const grouped = {};
+
+    expenses.forEach(({category, amount, date}) => {
+      const week = getWeekNumber(date);
+      if (!grouped[week]) grouped[week] = {};
+      if (!grouped[week][category]) grouped[week][category] = 0;
+      grouped[week][category] += amount;
+    });
+
+    return grouped;
+  }
+
+  // Update the expense summary section (list all expenses)
+  function updateSummary() {
+    const summaryDiv = document.getElementById("summary");
+    if (expenses.length === 0) {
+      summaryDiv.innerHTML = "<p>No expenses recorded yet.</p>";
+      return;
+    }
+    summaryDiv.innerHTML = "";
+    expenses.slice().reverse().forEach(({category, amount, date, timestamp}) => {
+      const div = document.createElement("div");
+      div.className = "expense-item";
+      div.textContent = `${capitalize(category)} - $${amount.toFixed(2)} on ${date} (added at ${timestamp})`;
+      summaryDiv.appendChild(div);
+    });
+  }
+
+  // Update chart based on selected view and category
+  function updateChart() {
+    const viewType = document.getElementById("viewType").value;
+    const categoryFilter = document.getElementById("categoryFilter").value;
+
+    let grouped;
+    if (viewType === "month") {
+      grouped = groupExpensesByMonth(expenses);
+    } else {
+      grouped = groupExpensesByWeek(expenses);
+    }
+
+    // Sort keys (month or week labels) chronologically
+    const labels = Object.keys(grouped).sort();
+
+    // If filtering one category, show single dataset; else show all categories summed.
+    const datasets = [];
+    const categoriesToShow = categoryFilter === "all" ? [
+      "housing","transportation","groceries","debt","eating out",
+      "entertainment","personal care","education","gifts and donation"
+    ] : [categoryFilter];
+
+    // Assign colors to categories (repeat if needed)
+    const colors = {
+      housing: "#e76f51",
+      transportation: "#2a9d8f",
+      groceries: "#f4a261",
+      debt: "#e63946",
+      "eating out": "#264653",
+      entertainment: "#8ecae6",
+      "personal care": "#ffb703",
+      education: "#219ebc",
+      "gifts and donation": "#6a994e"
+    };
+
+    categoriesToShow.forEach(category => {
+      const data = labels.map(label => grouped[label]?.[category] || 0);
+      datasets.push({
+        label: capitalize(category),
+        data,
+        backgroundColor: colors[category] + "cc",
+        borderColor: colors[category],
+        borderWidth: 2,
+        fill: false,
+        tension: 0.2,
+        type: "line"
       });
+    });
 
-      const categories = Object.keys(totals);
-      const values = categories.map(c => totals[c]);
+    if (chart) chart.destroy();
 
-      const colors = [
-        '#FF6384', '#36A2EB', '#FFCE56', '#8E44AD', '#2ECC71',
-        '#E67E22', '#1ABC9C', '#C0392B', '#3498DB'
-      ];
-
-      const ctx = document.getElementById('expenseChart').getContext('2d');
-      if (chart) chart.destroy();
-
-      chart = new Chart(ctx, {
-        type: 'pie',
-        data: {
-          labels: categories.map(capitalize),
-          datasets: [{
-            data: values,
-            backgroundColor: colors.slice(0, categories.length)
-          }]
+    const ctx = document.getElementById("expenseChart").getContext("2d");
+    chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { position: 'top' },
+          title: { display: true, text: `Expenses by ${viewType === "month" ? "Month" : "Week"}` }
         },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: {
-              position: 'bottom'
-            }
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: { display: true, text: 'Amount ($)' }
+          },
+          x: {
+            title: { display: true, text: viewType === "month" ? "Month" : "Week" }
           }
         }
-      });
-    }
-
-    function capitalize(text) {
-      return text.charAt(0).toUpperCase() + text.slice(1);
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      updateSummary();
+      }
     });
-  </script>
+  }
+
+  // Initialize
+  renderCategoryInputs();
+  updateSummary();
+  updateChart();
+</script>
 </body>
 </html>
